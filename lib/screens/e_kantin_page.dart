@@ -3,6 +3,7 @@ import '../constants.dart';
 import '../widgets/fade_in_slide.dart';
 import 'order_history_page.dart';
 import 'detail_menu_page.dart';
+import 'top_up_page.dart';
 
 class EKantinPage extends StatefulWidget {
   const EKantinPage({super.key});
@@ -340,13 +341,24 @@ class _EKantinPageState extends State<EKantinPage> {
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
+                        GestureDetector(
+                          onTap: () {
+                            // Navigasi ke Halaman Top Up
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TopUpPage(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.add, color: Colors.white),
                           ),
-                          child: const Icon(Icons.add, color: Colors.white),
                         ),
                       ],
                     ),
