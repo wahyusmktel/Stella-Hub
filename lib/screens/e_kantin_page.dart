@@ -253,6 +253,16 @@ class _EKantinPageState extends State<EKantinPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Filter data menu DI LUAR GridView
+    final filteredMenus = _selectedCategoryIndex == 0
+        ? _menus
+        : _menus
+              .where(
+                (menu) =>
+                    menu['category'] == _categories[_selectedCategoryIndex],
+              )
+              .toList();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
@@ -268,11 +278,9 @@ class _EKantinPageState extends State<EKantinPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // --- ICON RIWAYAT (UPDATE INI) ---
           IconButton(
             icon: const Icon(Icons.history, color: Colors.black),
             onPressed: () {
-              // Navigasi ke Halaman Riwayat Order
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -286,12 +294,7 @@ class _EKantinPageState extends State<EKantinPage> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
-              100,
-            ), // Padding bawah besar biar ga ketutup Cart
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -397,120 +400,148 @@ class _EKantinPageState extends State<EKantinPage> {
                 const SizedBox(height: 20),
 
                 // 3. MENU GRID
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.75,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: _menus.length,
-                  itemBuilder: (context, index) {
-                    final menu = _menus[index];
-                    // Filter Logic (Visual only)
-                    if (_selectedCategoryIndex != 0 &&
-                        menu['category'] !=
-                            _categories[_selectedCategoryIndex]) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return FadeInSlide(
-                      delay: 0.2 + (index * 0.05),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                if (filteredMenus.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Text("Menu tidak ditemukan"),
+                    ),
+                  )
+                else
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.75,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Gambar Makanan
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(16),
-                                  ),
-                                  image: DecorationImage(
-                                    image: NetworkImage(menu['image']),
-                                    fit: BoxFit.cover,
+                    itemCount: filteredMenus.length,
+                    itemBuilder: (context, index) {
+                      final menu = filteredMenus[index];
+
+                      return FadeInSlide(
+                        delay: 0.2 + (index * 0.05),
+                        child: GestureDetector(
+                          // Tap pada KARTU (Navigasi ke Detail)
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailMenuPage(menu: menu),
+                              ),
+                            );
+
+                            if (result != null) {
+                              int qty = result['qty'];
+                              for (int i = 0; i < qty; i++) {
+                                _addToCart(menu);
+                              }
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Gambar Makanan (Fixed Height)
+                                Container(
+                                  height: 120,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(16),
+                                    ),
+                                    image: DecorationImage(
+                                      image: NetworkImage(menu['image']),
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            // Info Makanan
-                            Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    menu['name'],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    menu['stand'],
-                                    style: TextStyle(
-                                      color: Colors.grey[500],
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+
+                                Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _formatRupiah(menu['price']),
+                                        menu['name'],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          color: kTelkomRed,
-                                          fontSize: 12,
+                                          fontSize: 13,
                                         ),
                                       ),
-                                      GestureDetector(
-                                        onTap: () => _addToCart(menu),
-                                        child: Container(
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: kTelkomRed,
-                                            borderRadius: BorderRadius.circular(
-                                              6,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        menu['stand'],
+                                        style: TextStyle(
+                                          color: Colors.grey[500],
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            _formatRupiah(menu['price']),
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: kTelkomRed,
+                                              fontSize: 12,
                                             ),
                                           ),
-                                          child: const Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                            size: 16,
+
+                                          // --- FITUR ADD LANGSUNG DISINI ---
+                                          GestureDetector(
+                                            onTap: () {
+                                              // Menambah ke cart tanpa pindah halaman
+                                              _addToCart(menu);
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: kTelkomRed,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                              ),
+                                              child: const Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          // -------------------------------
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
               ],
             ),
           ),
