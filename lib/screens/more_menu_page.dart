@@ -4,6 +4,11 @@ import '../widgets/fade_in_slide.dart';
 import 'permission_page.dart'; // Kita akan buat ini setelahnya
 import 'e_raport_page.dart';
 import 'e_kantin_page.dart';
+import 'ekskul_page.dart';
+import 'organization_page.dart';
+import 'calendar_page.dart';
+import 'settings_page.dart';
+import 'help_page.dart';
 
 class MoreMenuPage extends StatelessWidget {
   const MoreMenuPage({super.key});
@@ -34,31 +39,31 @@ class MoreMenuPage extends StatelessWidget {
         "label": "Ekskul",
         "icon": Icons.sports_basketball,
         "color": Colors.red,
-        "page": null,
+        "page": const EkskulPage(),
       },
       {
         "label": "Organisasi",
         "icon": Icons.groups,
         "color": Colors.purple,
-        "page": null,
+        "page": const OrganizationPage(),
       },
       {
         "label": "Kalender",
         "icon": Icons.calendar_today,
         "color": Colors.indigo,
-        "page": null,
+        "page": const CalendarPage(),
       },
       {
         "label": "Pengaturan",
         "icon": Icons.settings,
         "color": Colors.grey,
-        "page": null,
+        "page": const SettingsPage(),
       },
       {
         "label": "Bantuan",
         "icon": Icons.help_outline,
         "color": Colors.green,
-        "page": null,
+        "page": const HelpPage(),
       },
     ];
 
