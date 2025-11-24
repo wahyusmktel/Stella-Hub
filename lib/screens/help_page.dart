@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../widgets/fade_in_slide.dart';
-import 'admin_chat_page.dart';
+import 'admin_chat_page.dart'; // <--- SUDAH DI-IMPORT
 
 class HelpPage extends StatefulWidget {
   const HelpPage({super.key});
@@ -128,6 +128,7 @@ class _HelpPageState extends State<HelpPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
+                  // --- TOMBOL CHAT ADMIN (SUDAH DIPERBAIKI) ---
                   Expanded(
                     child: _buildContactCard(
                       "Chat Admin",
@@ -144,6 +145,8 @@ class _HelpPageState extends State<HelpPage> {
                       },
                     ),
                   ),
+
+                  // --------------------------------------------
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildContactCard(
@@ -261,11 +264,7 @@ class _HelpPageState extends State<HelpPage> {
     VoidCallback onTap,
   ) {
     return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Menghubungi $title...")));
-      },
+      onTap: onTap, // Menggunakan fungsi onTap yang dikirim
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
